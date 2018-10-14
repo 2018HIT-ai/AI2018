@@ -72,6 +72,30 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def general(problem, structure):
+    closeTable = []
+    openTable = []
+    init = problem.getStartState()
+
+    if isinstance(structure, util.Stack) or isinstance(structure, util.Queue):
+        structure.push((init, openTable))
+
+    while structure:
+        if isinstance(structure, util.Stack) or isinstance(structure, util.Queue):
+            point, action = structure.pop()
+        if not point in closeTable:
+            closeTable.append(point)
+            if problem.isGoalState(point):
+                return action
+            successors = problem.getSuccessors(point)
+            for successor in successors:
+                coordinate, direction, cost = successor
+                newAction = action + [direction]
+                if isinstance(structure, util.Stack) or isinstance(structure, util.Queue):
+                    structure.push((coordinate, newAction))
+    return []
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -87,11 +111,13 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    return general(problem, util.Stack())
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    return general(problem, util.Queue())
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
