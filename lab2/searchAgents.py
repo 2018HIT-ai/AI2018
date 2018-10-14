@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.corners_stats = {cnr:False for cnr in self.corners}
 
     def getStartState(self):
         """
