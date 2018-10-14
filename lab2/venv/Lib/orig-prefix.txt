@@ -1,1 +1,1 @@
-C:\Users\omnitrix\Miniconda3\envs\py27
+C:\Program Files\python27
