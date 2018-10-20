@@ -16,7 +16,7 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
-
+import copy
 import util
 
 class SearchProblem:
@@ -120,10 +120,53 @@ def breadthFirstSearch(problem):
     return general(problem, util.Queue())
     util.raiseNotDefined()
 
+def priorityFunc(frontier_para):
+    return frontier_para[3]
+    
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    
+    def priorityFunc(frontier_para):
+        return frontier_para[2]
+    frontier = util.PriorityQueueWithFunction(priorityFunc)
+    frontier = []
+    expand = dict()
+    explored = []
+    solution = []
+    path = [problem.getStartState()]
+    cost = 0
+    
+    """frontier[0] stores a list of paths, frontier[1] stores a list of solutions"""
+    frontier.append([path,solution,cost])
+    while frontier:
+        cur_node = frontier.pop(0)
+        if problem.isGoalState(cur_node[0][-1]):
+            return cur_node[1]
+            
+        explored.append(cur_node[0][-1])
+        next_successor = problem.getSuccessors(explored[-1])
+        for successor in next_successor:
+            if successor[0] not in explored:
+                new_node = copy.deepcopy(cur_node)
+                new_node[0].append(successor[0])
+                new_node[1].append(successor[1])
+                new_node[2] += successor[2]
+                if successor[0] not in expand:
+                    expand[successor[0]] = new_node[2]
+                    frontier.append(new_node)
+                    frontier.sort(key = priorityFunc)
+                else:
+                    if expand[successor[0]] > new_node[2]:
+                        expand[successor[0]] = new_node[2]
+                        for node in frontier:
+                            if node[0][-1] == successor[0]:
+                                frontier.remove(node)
+                        frontier.append(new_node)
+                        frontier.sort(key = priorityFunc)
+                        
+    return[]
+    #util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -134,8 +177,50 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    
+    frontier = []
+    expand = dict()
+    explored = []
+    
+    path = [problem.getStartState()]
+    solution = []
+    cost = 0
+    fVal = 0
+    
+    frontier.append([path,solution,cost,fVal])
+    while frontier:
+        curPath,curSolution,curCost,curFVal = frontier.pop(0)
+        curState = curPath[-1]
+        
+        if problem.isGoalState(curState):
+            return curSolution
+            
+        explored.append(curState)
+        successor = problem.getSuccessors(explored[-1])
+        for nextState,movement,cost in successor:
+            if nextState not in explored:
+                newPath = curPath[:]
+                newPath.append(nextState)
+                newSolution = curSolution[:]
+                newSolution.append(movement)
+                newCost = curCost + cost
+                newFVal = newCost + heuristic(nextState,problem)
+            if nextState not in expand:
+                expand[nextState] = newFVal
+                frontier.append([newPath,newSolution,newCost,newFVal])
+                frontier.sort(key = priorityFunc)
+            else:
+                if expand[nextState] > newFVal:
+                    expand[nextState] = newFVal
+                    for tmpPath,tmpSolution,tmpCost,tmpFVal in frontier:
+                        if tmpPath[-1] == nextState:
+                            frontier.remove([tmpPath,tmpSolution,tmpCost,tmpFVal])
+                    frontier.append([newPath,newSolution,newCost,newFVal])
+                    frontier.sort(key = priorityFunc)
+                   
+    return[]    
+    #util.raiseNotDefined()
 
 
 # Abbreviations
