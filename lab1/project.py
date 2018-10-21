@@ -1,9 +1,6 @@
 data=[['A','B','C',0]]
 path=['the steps:']
-Monkey='A'
-Banana='B'
-Box='C'
-On=0
+Monkey,Banana,Box,On=data[0]
 i=1
 def move(n):
     global Monkey,i
@@ -26,6 +23,12 @@ def push(n):
     i = i + 1
 def get():
     path.append('step %d:get this banana'%(i))
+def down():
+    global i,On
+    path.append('step %d:jump off this box at %s'%(i,Box))
+    On=0
+    data.append([Monkey, Banana, Box, On])
+    i=i+1
 def step():
     if Monkey==Banana:
         if Box==Banana:
@@ -35,7 +38,10 @@ def step():
             move(Box)
             step()
     else:
-        if Box==Monkey:
+        if On==1:
+            down()
+            step()
+        elif Box==Monkey:
             push(Banana)
             step()
         else:
