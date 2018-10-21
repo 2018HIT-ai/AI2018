@@ -504,7 +504,7 @@ def foodHeuristic(state, problem):
     min_dist = 0
     for i in range(0, len(food_list)):
         # dist=abs(position[0]-food_list[i][0])+abs(position[1]-food_list[i][1])
-        dist = mazeDistance(position, food_list[i], problem.getGamestate())
+        dist = mazeDistance(position, food_list[i], problem.getGameStart())
         min_dist = max(min_dist, dist)
     # min_dist=dist/len(food_list)
     # print min_dist
