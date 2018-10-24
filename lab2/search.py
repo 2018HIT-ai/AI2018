@@ -120,15 +120,17 @@ def breadthFirstSearch(problem):
     return general(problem, util.Queue())
     util.raiseNotDefined()
 
-def priorityFunc(frontier_para):
-    return frontier_para[3]
+
     
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     from game import Directions
-    
+  
     def priorityFunc(frontier_para):
         return frontier_para[2]
+        
+
+    
     frontier = util.PriorityQueueWithFunction(priorityFunc)
     frontier = []
     expand = dict()
@@ -174,52 +176,36 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+        
+    
+
+    
+    
+    
+    
+    
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    from game import Directions
-    
-    frontier = []
-    expand = dict()
-    explored = []
-    
-    path = [problem.getStartState()]
-    solution = []
-    cost = 0
-    fVal = 0
-    
-    frontier.append([path,solution,cost,fVal])
-    while frontier:
-        curPath,curSolution,curCost,curFVal = frontier.pop(0)
-        curState = curPath[-1]
-        
-        if problem.isGoalState(curState):
-            return curSolution
-            
-        explored.append(curState)
-        successor = problem.getSuccessors(explored[-1])
-        for nextState,movement,cost in successor:
-            if nextState not in explored:
-                newPath = curPath[:]
-                newPath.append(nextState)
-                newSolution = curSolution[:]
-                newSolution.append(movement)
-                newCost = curCost + cost
-                newFVal = newCost + heuristic(nextState,problem)
-            if nextState not in expand:
-                expand[nextState] = newFVal
-                frontier.append([newPath,newSolution,newCost,newFVal])
-                frontier.sort(key = priorityFunc)
-            else:
-                if expand[nextState] > newFVal:
-                    expand[nextState] = newFVal
-                    for tmpPath,tmpSolution,tmpCost,tmpFVal in frontier:
-                        if tmpPath[-1] == nextState:
-                            frontier.remove([tmpPath,tmpSolution,tmpCost,tmpFVal])
-                    frontier.append([newPath,newSolution,newCost,newFVal])
-                    frontier.sort(key = priorityFunc)
-                   
-    return[]    
+    from sets import Set
+    fringe = util.PriorityQueue()
+    actions = []
+    fringe.push((problem.getStartState(),actions),0)
+    visited = []
+    tmpAction = []
+    while fringe:
+        currState,actions = fringe.pop()
+        if problem.isGoalState(currState):
+            break
+        if currState not in visited:
+            visited.append(currState)
+            successors = problem.getSuccessors(currState)
+            for successor,action,cost in successors:
+                tempActions = actions + [action]
+                nextCost = problem.getCostOfActions(tempActions)+ heuristic(successor,problem)
+                if successor not in visited:
+                    fringe.push((successor,tempActions),nextCost)
+    return actions
     #util.raiseNotDefined()
 
 
